@@ -4,6 +4,8 @@ import LoginView from '../views/LoginView.vue'
 import HomeView from '../views/HomeView.vue'
 import WelcomeView from '../views/WelcomeView.vue'
 import UserView from '../views/UserView.vue'
+import RightsView from '../views/RightsView.vue'
+import RolesView from '../views/RolesView.vue'
 
 Vue.use(VueRouter)
 
@@ -30,6 +32,14 @@ const routes = [
       {
         path: '/users',
         component: UserView
+      },
+      {
+        path: '/rights',
+        component: RightsView
+      },
+      {
+        path: '/roles',
+        component: RolesView
       }
     ]
 

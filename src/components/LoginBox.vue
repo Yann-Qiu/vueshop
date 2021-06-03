@@ -28,15 +28,7 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import { Avatar, Form, FormItem, Input, Button, Message } from 'element-ui'
 import logo from '../assets/logo.png'
-
-Vue.use(Avatar)
-Vue.use(Form)
-Vue.use(FormItem)
-Vue.use(Input)
-Vue.use(Button)
 
 export default {
   data: function () {
@@ -61,14 +53,14 @@ export default {
         if (valid) {
           const { data } = await this.$http.post('login', this.form)
           if (data.meta.status !== 200) {
-            Message({
+            this.$message({
               message: 'login fail',
               type: 'error'
             })
             return false
           } else {
             window.sessionStorage.setItem('token', data.data.token)
-            Message({
+            this.$message({
               message: 'login sucess',
               type: 'success'
             })

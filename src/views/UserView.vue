@@ -128,32 +128,6 @@
 </template>
 
 <script>
-import {
-  Breadcrumb, BreadcrumbItem,
-  Card, Input, Button, Table,
-  TableColumn, Row, Col, Pagination,
-  Switch, Tooltip, Loading, Message,
-  Dialog, Form, FormItem, MessageBox
-} from 'element-ui'
-import Vue from 'vue'
-
-Vue.use(Breadcrumb)
-Vue.use(BreadcrumbItem)
-Vue.use(Card)
-Vue.use(Input)
-Vue.use(Button)
-Vue.use(Table)
-Vue.use(TableColumn)
-Vue.use(Row)
-Vue.use(Col)
-Vue.use(Pagination)
-Vue.use(Switch)
-Vue.use(Tooltip)
-Vue.use(Loading)
-Vue.use(Dialog)
-Vue.use(Form)
-Vue.use(FormItem)
-
 export default {
   data () {
     var validateEmail = (rule, value, callback) => {
@@ -265,13 +239,13 @@ export default {
       console.log(data)
       if (data.meta.status !== 200) {
         item.mg_state = !item.mg_state
-        Message({
+        this.$message({
           message: 'Change fail',
           type: 'error'
         })
         return false
       } else {
-        Message({
+        this.$message({
           message: 'Change sucess',
           type: 'success'
         })
@@ -290,11 +264,11 @@ export default {
         if (valid) {
           const { data } = await this.$http.post('/users', this.form)
           if (data.meta.status === 201) {
-            Message.success('add user success')
+            this.$message.success('add user success')
             this.getUserList()
-          } else Message.error('add user failed')
+          } else this.$message.error('add user failed')
         } else {
-          Message.error('add user failed')
+          this.$message.error('add user failed')
           return false
         }
       })
@@ -306,11 +280,11 @@ export default {
         if (valid) {
           const { data } = await this.$http.put(`/users/${this.form2.id}`, { id: this.form2.id, mobile: this.form2.mobile, email: this.form2.email })
           if (data.meta.status === 200) {
-            Message.success('edit user success')
+            this.$message.success('edit user success')
             this.getUserList()
-          } else Message.error('edit user failed')
+          } else this.$message.error('edit user failed')
         } else {
-          Message.error('edit user failed')
+          this.$message.error('edit user failed')
           return false
         }
       })
@@ -323,31 +297,31 @@ export default {
       if (data.meta.status === 200) {
         this.form2 = data.data
       } else {
-        Message.error('get userinfo failed')
+        this.$message.error('get userinfo failed')
         this.dialog2Visible = false
       }
     },
     deleteConfirm (id) {
-      MessageBox.confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+      this.$massgebox.confirm('此操作将永久删除该用户, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
         const { data } = await this.$http.delete(`/users/${id}`)
         if (data.meta.status === 200) {
-          Message({
+          this.$message({
             type: 'success',
             message: 'delete success'
           })
           this.getUserList()
         } else {
-          Message({
+          this.$message({
             type: 'error',
             message: 'delete failed'
           })
         }
       }).catch(() => {
-        Message({
+        this.$message({
           type: 'info',
           message: 'cancel success'
         })
@@ -370,6 +344,7 @@ export default {
 
     .el-card{
         margin-top: 20px;
+        overflow: auto;
     }
 
     .topBox{

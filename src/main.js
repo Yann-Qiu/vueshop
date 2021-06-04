@@ -14,7 +14,8 @@ import {
   Switch, Tooltip, Loading, Message,
   Dialog, Form, FormItem, MessageBox,
   Avatar, Container, Header, Aside, Main,
-  Menu, Submenu, MenuItem, MenuItemGroup, Tag
+  Menu, Submenu, MenuItem, MenuItemGroup, Tag,
+  Tree
 } from 'element-ui'
 axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1/'
 axios.interceptors.request.use(config => {
@@ -53,6 +54,7 @@ Vue.use(Submenu)
 Vue.use(MenuItem)
 Vue.use(MenuItemGroup)
 Vue.use(Tag)
+Vue.use(Tree)
 
 new Vue({
   router,

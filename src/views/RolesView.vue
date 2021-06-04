@@ -54,14 +54,33 @@
                 <el-table-column
                     label="操作"
                     width="300px">
-                    <template >
+                    <template slot-scope="scope">
                         <el-button type="primary" size="mini" icon="el-icon-edit" >编辑</el-button>
                         <el-button type="danger" size="mini" icon="el-icon-delete" >删除</el-button>
-                        <el-button type="warning" size="mini" icon="el-icon-setting" >分配权限</el-button>
+                        <el-button type="warning" size="mini" icon="el-icon-setting" @click="showSetRightsDialog(scope.row)">分配权限</el-button>
                     </template>
                 </el-table-column>
             </el-table>
         </el-card>
+        <el-dialog
+        title="分配权限"
+        :visible.sync="dialogVisible"
+        width="50%">
+        <el-tree
+        :data="rightsList"
+        show-checkbox
+        default-expand-all
+        node-key="id"
+        ref="tree"
+        highlight-current
+        :default-checked-keys="dafaultKeys"
+        :props="defaultProps">
+        </el-tree>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="submitRight">确 定</el-button>
+        </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -71,7 +90,15 @@ export default {
   data () {
     return {
       roleList: [],
-      loading: false
+      loading: false,
+      dialogVisible: false,
+      rightsList: [],
+      defaultProps: {
+        children: 'children',
+        label: 'authName'
+      },
+      dafaultKeys: [105],
+      currentRoleId: 0
     }
   },
   components: {
@@ -84,12 +111,43 @@ export default {
       this.loading = true
       const { data } = await this.$http.get('/roles')
       if (data.meta.status === 200) {
-        console.log(data.data)
         this.roleList = data.data
+        console.log(this.roleList)
         this.loading = false
       } else {
         this.$message.error('get role list fail')
       }
+    },
+    async showSetRightsDialog (item) {
+      const { data } = await this.$http.get('/rights/tree')
+      console.log(data)
+      const arr = []
+      this.getLeafKeys(item, arr)
+      this.dafaultKeys = arr
+      this.currentRoleId = item.id
+      this.rightsList = data.data
+      this.dialogVisible = true
+    },
+    getLeafKeys (node, arr) {
+      if (node.children) {
+        node.children.forEach(element => {
+          this.getLeafKeys(element, arr)
+        })
+      } else {
+        arr.push(node.id)
+      }
+    },
+    async submitRight () {
+      const arr = [...this.$refs.tree.getCheckedKeys(), ...this.$refs.tree.getHalfCheckedKeys()]
+      const str = arr.join()
+      const { data } = await this.$http.post(`/roles/${this.currentRoleId}/rights`, { rids: str })
+      if (data.meta.status === 200) {
+        this.$message.success('set rights success')
+      } else {
+        this.$message.error('set rights failed')
+      }
+      this.getRoleList()
+      this.dialogVisible = false
     }
   },
   created () {

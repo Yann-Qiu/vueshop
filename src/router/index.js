@@ -6,7 +6,8 @@ import WelcomeView from '../views/WelcomeView.vue'
 import UserView from '../views/UserView.vue'
 import RightsView from '../views/RightsView.vue'
 import RolesView from '../views/RolesView.vue'
-import cateView from '../views/CateView.vue'
+import CateView from '../views/CateView.vue'
+import ParamsView from '../views/ParamsView.vue'
 
 Vue.use(VueRouter)
 
@@ -44,7 +45,11 @@ const routes = [
       },
       {
         path: '/categories',
-        component: cateView
+        component: CateView
+      },
+      {
+        path: '/params',
+        component: ParamsView
       }
     ]
 

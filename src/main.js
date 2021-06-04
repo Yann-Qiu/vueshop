@@ -15,7 +15,7 @@ import {
   Dialog, Form, FormItem, MessageBox,
   Avatar, Container, Header, Aside, Main,
   Menu, Submenu, MenuItem, MenuItemGroup, Tag,
-  Tree
+  Tree, Alert, Cascader, Tabs, TabPane
 } from 'element-ui'
 axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1/'
 axios.interceptors.request.use(config => {
@@ -55,6 +55,10 @@ Vue.use(MenuItem)
 Vue.use(MenuItemGroup)
 Vue.use(Tag)
 Vue.use(Tree)
+Vue.use(Alert)
+Vue.use(Cascader)
+Vue.use(Tabs)
+Vue.use(TabPane)
 
 new Vue({
   router,

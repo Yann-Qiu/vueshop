@@ -25,19 +25,18 @@
                     <el-table :data="manyTable" border stripe>
                         <el-table-column type="expand">
                             <template slot-scope="scope">
-                                <el-tag v-for="item,i in 5" :key="i" closable>{{item}}</el-tag>
-                                <el-tag v-for="item,i in scope.row.attr_vals" :key="i" closable>{{item}}</el-tag>
+                                <el-tag v-for="item,i in scope.row.attr_vals" :key="i" closable @close='handleClosetag(i,scope.row)'>{{item}}</el-tag>
                                 <el-input
-                                v-if="inputVisible"
-                                v-model="inputValue"
+                                v-if="scope.row.inputVisible"
+                                v-model="scope.row.inputValue"
                                 ref="saveTagInput"
-                                @keyup.enter.native="handleInputConfirm"
-                                @blur="handleInputConfirm"
+                                @keyup.enter.native="handleInputConfirm(scope.row)"
+                                @blur="handleInputConfirm(scope.row)"
                                 size='small'
                                 class="input-new-tag"
                                 >
                                 </el-input>
-                                <el-button class="input-new-tag" v-else size="small" @click="showInput" type="primary">+ New Tag</el-button>
+                                <el-button class="input-new-tag" v-else size="small" @click="showInput(scope.row)" type="primary">+ New Tag</el-button>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -107,8 +106,6 @@ export default {
       manyTable: [],
       onlyTable: [],
       dialogVisible: false,
-      inputVisible: false,
-      inputValue: '',
       form: {
         param: ''
       }
@@ -145,6 +142,8 @@ export default {
     handleCasChange () {
       if (this.value.length !== 3) {
         this.value = []
+        this.manyTable = []
+        this.onlyTable = []
         this.$message.error('只允许为第三级分类设置参数')
       } else {
         this.getParams()
@@ -156,7 +155,11 @@ export default {
     async getParams (tab, event) {
       this.loading = true
       const { data } = await this.$http.get(`/categories/${this.currentId}/attributes`, { params: { sel: this.activeName } })
-      console.log(data.data)
+      data.data.forEach(e => {
+        e.attr_vals = e.attr_vals ? e.attr_vals.split(' ') : []
+        e.inputVisible = false
+        e.inputValue = ''
+      })
       if (this.activeName === 'many') {
         this.manyTable = data.data
       } else {
@@ -178,16 +181,31 @@ export default {
       this.$refs.formRef.resetFields()
       this.dialogVisible = false
     },
-    showInput () {
-      this.inputVisible = true
+    showInput (item) {
+      item.inputVisible = true
       this.$nextTick(_ => {
         this.$refs.saveTagInput.$refs.input.focus()
       })
-      console.log(this)
     },
-    handleInputConfirm () {
-      this.inputVisible = false
-      console.log(this)
+    async saveNewTag (item) {
+      if (item.inputValue.trim().length) {
+        item.attr_vals.push(item.inputValue.trim())
+        const { data } = await this.$http.put(`categories/${this.currentId}/attributes/${item.attr_id}`, { attr_name: item.attr_name, attr_sel: item.attr_sel, attr_vals: item.attr_vals.join(' ') })
+        if (data.meta.status === 200) {
+          this.$message.success('add params success')
+        } else {
+          this.$message.error('add params failed')
+        }
+      }
+    },
+    async handleInputConfirm (item) {
+      item.inputVisible = false
+      this.saveNewTag(item)
+      item.inputValue = ''
+    },
+    handleClosetag (i, item) {
+      item.attr_vals.splice(i, 1)
+      this.saveNewTag(item)
     }
   },
   created () {
